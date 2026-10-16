@@ -19,7 +19,10 @@ RUN npm run build
 FROM node:${NODE_VERSION}-bookworm-slim AS backend
 WORKDIR /app/backend
 COPY backend/package.json backend/package-lock.json ./
-RUN npm ci --omit=dev && npm cache clean --force
+# --ignore-scripts: better-sqlite3 ships prebuilt binaries (glibc and musl,
+# x64 and arm64), so no compiler is needed and no third-party install script
+# runs during the build.
+RUN npm ci --omit=dev --ignore-scripts && npm cache clean --force
 
 # ---- Runtime
 FROM node:${NODE_VERSION}-bookworm-slim
