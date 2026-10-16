@@ -21,7 +21,7 @@ The frontend has no automated tests: `lint`, `i18n:check` and `build` must pass.
 
 ## Rules that are easy to break
 
-- **Everything in English**: code, comments, database, API, documentation. The UI is translated (English and Italian today).
+- **Everything in English**: code, comments, database, API, documentation, commit messages and pull requests. The UI is translated (English and Italian today).
 - **No hard-coded UI text.** Every string goes through `t("key")` with the key in **every** file in `frontend/src/locales/`; amounts, dates and month names only through `frontend/src/utils/format.js`. Store keys in state, never translated text. Run `npm run i18n:check`.
 - **Dates are ISO `YYYY-MM-DD` strings and amounts are integer cents** in the database, the API and frontend state. Convert only at the UI edges (`frontend/src/utils/money.js`).
 - **Multi-user isolation**: every query on user data is scoped by `user_id`, and every `accountId` from the client is checked with `accountBelongsToUser`. `backend/test/isolation.test.js` must keep passing.
