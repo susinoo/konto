@@ -183,7 +183,7 @@ Please report vulnerabilities privately, as described in [SECURITY.md](SECURITY.
 
 ## AI-assisted development
 
-Konto was developed with the help of [Claude Code](https://claude.com/claude-code), Anthropic's AI coding assistant. The author drove the product and design decisions, reviewed the changes and tested the app in daily use; Claude Code wrote much of the implementation, the tests and the documentation under that direction.
+Konto was developed with the help of [Claude Code](https://claude.com/claude-code), Anthropic's AI coding assistant. The author drove the product and design decisions and tested the app in daily use.
 
 AI-generated code can contain mistakes like any other code: issues and pull requests are welcome.
 
