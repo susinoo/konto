@@ -1,0 +1,32 @@
+name: Show your fork
+description: Built something on top of Konto? Tell us about it.
+labels: [fork]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Forks are the whole point of Konto. Interesting ones may be listed in the README under *Community forks*.
+  - type: input
+    id: url
+    attributes:
+      label: Link to your fork
+      placeholder: https://github.com/you/konto
+    validations:
+      required: true
+  - type: textarea
+    id: what
+    attributes:
+      label: What did you change or add?
+    validations:
+      required: true
+  - type: textarea
+    id: upstream
+    attributes:
+      label: Anything worth bringing back?
+      description: Changes that could be useful to every Konto user, if any.
+  - type: checkboxes
+    id: listing
+    attributes:
+      label: Listing
+      options:
+        - label: My fork may be listed in the README.

@@ -1,0 +1,152 @@
+@import "tailwindcss";
+
+/* Primary (blue) palette for Tailwind 4 */
+@theme {
+  --color-primary-50: #eff6ff;
+  --color-primary-100: #dbeafe;
+  --color-primary-500: #3b82f6;
+  --color-primary-600: #2563eb;
+  --color-primary-900: #1e3a8a;
+}
+
+@layer base {
+  html {
+    background-color: var(--color-gray-50);
+  }
+
+  body {
+    background-color: var(--color-gray-50);
+    color: var(--color-gray-900);
+    -webkit-font-smoothing: antialiased;
+    transition-property:
+      color, background-color, border-color, text-decoration-color, fill, stroke;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 200ms;
+  }
+
+  /* html/body have no dark class: they follow prefers-color-scheme directly,
+     otherwise the light body background shows behind the app during iOS
+     overscroll (rubber band) in dark mode. */
+  @media (prefers-color-scheme: dark) {
+    html {
+      background-color: var(--color-gray-900);
+    }
+
+    body {
+      background-color: var(--color-gray-900);
+      color: var(--color-gray-50);
+    }
+  }
+
+  input[type="date"] {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+    -webkit-appearance: none;
+    appearance: none;
+  }
+
+  input[type="number"]::-webkit-inner-spin-button,
+  input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  /* Without these rules the browser's inner color swatch ignores the
+     input's border-radius, leaving square corners inside a swatch meant to
+     be round. */
+  input[type="color"] {
+    -webkit-appearance: none;
+    appearance: none;
+    border: none;
+    padding: 0;
+  }
+  input[type="color"]::-webkit-color-swatch-wrapper {
+    padding: 0;
+  }
+  input[type="color"]::-webkit-color-swatch {
+    border: none;
+    border-radius: inherit;
+  }
+  input[type="color"]::-moz-color-swatch {
+    border: none;
+    border-radius: inherit;
+  }
+}
+
+/* iPhone safe areas (notch / Dynamic Island, home indicator). With
+   viewport-fit=cover in index.html they are 0 everywhere else. */
+@utility pt-safe {
+  padding-top: env(safe-area-inset-top);
+}
+@utility pb-safe {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* Bottom sheets (period picker, edit forms): never taller than the screen,
+   scrollable inside (e.g. with the iOS keyboard open), clear of the home
+   indicator. Combine with pt-4 px-4, not p-4. */
+@utility sheet-panel {
+  max-height: 85dvh;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding-bottom: calc(1rem + env(safe-area-inset-bottom));
+}
+
+/* Mobile type scale, aligned with iOS Dynamic Type at its default size:
+   body 17, subheadline 15, footnote 13 (Tailwind's defaults are one point
+   smaller). Utilities read these variables, so text-base/sm/xs follow;
+   spacing (rem) is unchanged. Desktop keeps the Tailwind scale. */
+@media (width < 40rem) {
+  :root {
+    --text-xs: 0.8125rem; /* 13px */
+    --text-sm: 0.9375rem; /* 15px */
+    --text-base: 1.0625rem; /* 17px */
+  }
+
+  body {
+    font-size: var(--text-base);
+  }
+}
+
+/* Type roles: one size per kind of text, the same on every page. They read
+   the --text-* variables, so they follow the mobile scale above.
+   Colors stay in the markup. */
+@utility type-section {
+  /* Section and card titles, dialog titles */
+  font-size: var(--text-lg);
+  line-height: var(--text-lg--line-height);
+  font-weight: 700;
+}
+@utility type-row-title {
+  /* First line of a list row: description, account or category name */
+  font-size: var(--text-base);
+  line-height: 1.3;
+  font-weight: 600;
+}
+@utility type-amount {
+  /* Amounts in list rows */
+  font-size: var(--text-base);
+  line-height: 1.3;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+@utility type-secondary {
+  /* Second line of a row: category, "From A to B", date, account */
+  font-size: var(--text-sm);
+  line-height: var(--text-sm--line-height);
+}
+@utility type-label {
+  /* Form field labels and compact controls (selectors, month pills) */
+  font-size: var(--text-sm);
+  line-height: var(--text-sm--line-height);
+  font-weight: 500;
+}
+@utility type-caption {
+  /* Small print: summary labels, hints */
+  font-size: var(--text-xs);
+  line-height: var(--text-xs--line-height);
+}

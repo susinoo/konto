@@ -1,0 +1,31 @@
+name: Feature request
+description: Suggest an idea for Konto.
+labels: [enhancement]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Konto aims to stay small and simple. Ideas that suit one setup well may fit a fork better than the main project, and that is fine: see the fork-first workflow in CONTRIBUTING.md.
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem would it solve?
+      description: Describe the situation, not only the solution.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: What do you propose?
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives you considered
+  - type: checkboxes
+    id: contribute
+    attributes:
+      label: Contribution
+      options:
+        - label: I would like to work on it myself (in a fork or as a pull request).

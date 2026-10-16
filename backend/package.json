@@ -1,0 +1,29 @@
+{
+  "name": "konto-backend",
+  "version": "2.0.0",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "start": "node server.js",
+    "dev": "NODE_ENV=development node --watch server.js",
+    "test": "node --test --test-force-exit test/*.test.js",
+    "seed:demo": "node scripts/seed-demo.js",
+    "dev:demo": "NODE_ENV=development KONTO_DATA_DIR=demo-data REGISTRATION_ENABLED=true node --watch server.js"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "better-sqlite3": "^12.11.1",
+    "compression": "^1.8.1",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "express-rate-limit": "^8.7.1",
+    "express-session": "^1.18.1",
+    "helmet": "^8.3.0"
+  },
+  "devDependencies": {
+    "supertest": "^7.3.1"
+  }
+}

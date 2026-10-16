@@ -1,0 +1,27 @@
+# Only the sources the Dockerfile needs: no secrets, data, dependencies or
+# build output from the host.
+**/node_modules
+**/.DS_Store
+**/.env
+**/.env.*
+!**/.env.example
+**/*.crt
+**/*.key
+**/*.pem
+
+.git
+.github
+.claude
+.continue
+reference
+deploy
+logs
+data
+tailscale-state
+
+backend/data
+backend/dati
+backend/demo-data
+backend/test
+backend/spese.csv
+frontend/dist

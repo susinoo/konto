@@ -1,0 +1,48 @@
+# Konto with Tailscale in a sidecar container: the app joins your tailnet as
+# its own machine (https://konto.<your-tailnet>.ts.net, or the name in
+# TS_HOSTNAME) and publishes no port on the host. Nothing Tailscale-related
+# is needed on the host.
+#
+#   cp backend/.env.example backend/.env      # then set the values
+#   mkdir -p data tailscale-state
+#   TS_AUTHKEY=tskey-auth-... docker compose -f docker-compose.tailscale.yml up -d --build
+#
+# The auth key (Tailscale admin console → Settings → Keys) is only needed for
+# the first login: the node identity is then kept in ./tailscale-state.
+# HTTPS certificates must be enabled for the tailnet (admin console → DNS).
+# The sidecar runs as root: files in ./tailscale-state belong to root
+# (`sudo rm -rf tailscale-state` to reset the machine identity).
+
+services:
+  tailscale:
+    image: tailscale/tailscale:stable
+    hostname: ${TS_HOSTNAME:-konto}
+    restart: unless-stopped
+    environment:
+      TS_AUTHKEY: ${TS_AUTHKEY:-}
+      TS_STATE_DIR: /var/lib/tailscale
+      TS_SERVE_CONFIG: /config/serve.json
+    volumes:
+      - ./tailscale-state:/var/lib/tailscale
+      - ./docker/tailscale-serve.json:/config/serve.json:ro
+
+  # The app does NOT share the sidecar's network namespace: in userspace
+  # mode Tailscale forwards tailnet connections on any port to the
+  # namespace's 127.0.0.1, which would expose the plain HTTP port to the
+  # tailnet. Here only the sidecar's HTTPS port is reachable, and it proxies
+  # to http://konto:3000 over the private Compose network.
+  konto:
+    build: .
+    image: konto:local
+    restart: unless-stopped
+    env_file: backend/.env
+    environment:
+      NODE_ENV: production
+      PORT: "3000"
+      HOST: 0.0.0.0
+      KONTO_DATA_DIR: /data
+      # Requests come from the sidecar's private address on the Compose
+      # network; the app publishes no port, so nothing else can reach it.
+      TRUST_PROXY: uniquelocal
+    volumes:
+      - ./data:/data

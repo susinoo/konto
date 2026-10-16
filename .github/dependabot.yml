@@ -1,0 +1,33 @@
+# Weekly dependency updates, as pull requests against develop. Minor and
+# patch updates of each ecosystem are grouped into a single pull request.
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /backend
+    target-branch: develop
+    schedule:
+      interval: weekly
+    groups:
+      backend-minor-patch:
+        update-types: [minor, patch]
+
+  - package-ecosystem: npm
+    directory: /frontend
+    target-branch: develop
+    schedule:
+      interval: weekly
+    groups:
+      frontend-minor-patch:
+        update-types: [minor, patch]
+
+  - package-ecosystem: github-actions
+    directory: /
+    target-branch: develop
+    schedule:
+      interval: weekly
+
+  - package-ecosystem: docker
+    directory: /
+    target-branch: develop
+    schedule:
+      interval: weekly

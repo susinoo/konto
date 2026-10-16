@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Questions and ideas
+    url: https://github.com/susinoo/Konto/discussions
+    about: Ask how to set up or use Konto, or discuss an idea before opening an issue.
+  - name: Report a vulnerability
+    url: https://github.com/susinoo/Konto/security/advisories/new
+    about: Please report security issues privately, never in a public issue.

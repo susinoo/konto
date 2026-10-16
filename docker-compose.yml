@@ -1,0 +1,36 @@
+# Konto with Docker, HTTPS handled on the host by `tailscale serve`.
+#
+#   cp backend/.env.example backend/.env      # then set the values
+#   mkdir -p data                             # before the first start
+#   docker compose up -d --build
+#   tailscale serve --bg --https=8443 http://127.0.0.1:3000
+#
+# The app is published on 127.0.0.1 only: from the network it is reachable
+# only through `tailscale serve` (or another local reverse proxy).
+# Alternative with Tailscale in its own container: docker-compose.tailscale.yml.
+
+services:
+  konto:
+    build: .
+    image: konto:local
+    restart: unless-stopped
+    # Secrets and settings (KONTO_USER, KONTO_PASS, SESSION_SECRET,
+    # REGISTRATION_ENABLED, KONTO_LOCALE, KONTO_CURRENCY...).
+    env_file: backend/.env
+    # Fixed for the container: they win over the same names in backend/.env.
+    environment:
+      NODE_ENV: production
+      PORT: "3000"
+      HOST: 0.0.0.0
+      KONTO_DATA_DIR: /data
+      # The proxy reaches the container from the Docker bridge (a private
+      # address), not from 127.0.0.1. Trusting private addresses is safe here
+      # because the port is bound to 127.0.0.1 only.
+      TRUST_PROXY: loopback,uniquelocal
+    ports:
+      - "127.0.0.1:${KONTO_PORT:-3000}:3000"
+    # Databases, sessions and backups as plain files on the host: back up
+    # ./data/backups after `docker compose exec konto node backend/scripts/backup.js`.
+    # The directory must be writable by uid 1000 (the `node` user).
+    volumes:
+      - ./data:/data
