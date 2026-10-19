@@ -15,9 +15,15 @@ import RegistrationWizard from "./pages/RegistrationWizard";
 
 // Loaded on demand: not needed for the first render (the Dashboard shows
 // after login), and Analytics pulls in recharts, the heaviest dependency.
-const Transactions = lazy(() => import("./pages/Transactions"));
-const Analytics = lazy(() => import("./pages/Analytics"));
-const Settings = lazy(() => import("./pages/Settings"));
+// Prefetched in the background after login (see App).
+const loadTransactions = () => import("./pages/Transactions");
+const loadAnalytics = () => import("./pages/Analytics");
+const loadSettings = () => import("./pages/Settings");
+const Transactions = lazy(loadTransactions);
+const Analytics = lazy(loadAnalytics);
+const Settings = lazy(loadSettings);
+const LAZY_PAGES = [loadTransactions, loadAnalytics, loadSettings];
+const PREFETCH_DELAY_MS = 1000;
 
 import { apiFetch } from "./services/api";
 import { setCurrency } from "./utils/format";
@@ -38,28 +44,31 @@ function App() {
   const location = useLocation();
   const isActive = (path) => location.pathname === path;
 
-  // On startup: instance configuration, then the existing session (if any).
+  // On startup: instance configuration and the existing session (if any),
+  // requested in parallel to save a round trip on every cold start.
   useEffect(() => {
     const checkSession = async () => {
-      try {
-        const config = await (await apiFetch("/api/config")).json();
-        setCurrency(config.currency);
-        setRegistrationEnabled(!!config.registrationEnabled);
-      } catch {
-        // Defaults: EUR, registration hidden
+      const [config, me] = await Promise.allSettled([
+        apiFetch("/api/config").then((res) => res.json()),
+        apiFetch("/api/auth/me"),
+      ]);
+
+      // Otherwise the defaults: EUR, registration hidden
+      if (config.status === "fulfilled") {
+        setCurrency(config.value.currency);
+        setRegistrationEnabled(!!config.value.registrationEnabled);
       }
+
       try {
-        const res = await apiFetch("/api/auth/me");
-        if (res.ok) {
-          const data = await res.json();
+        // Rejected: NOT_AUTHORIZED or network error
+        if (me.status === "fulfilled" && me.value.ok) {
+          const data = await me.value.json();
           setUser(data.user);
           setIsAuthed(true);
         } else {
           setIsAuthed(false);
         }
-        // eslint-disable-next-line no-unused-vars
-      } catch (err) {
-        // NOT_AUTHORIZED or network error
+      } catch {
         setIsAuthed(false);
       } finally {
         setCheckingAuth(false);
@@ -68,6 +77,18 @@ function App() {
 
     checkSession();
   }, []);
+
+  // Once logged in, fetch the lazy pages in the background: the first tap on
+  // Transactions, Analytics, Settings or the "+" button then needs no
+  // download. Delayed so it does not compete with the Dashboard's own data.
+  useEffect(() => {
+    if (!isAuthed) return;
+    const timer = setTimeout(() => {
+      // A failed prefetch is harmless: lazy() loads the page again on navigation.
+      LAZY_PAGES.forEach((load) => load().catch(() => {}));
+    }, PREFETCH_DELAY_MS);
+    return () => clearTimeout(timer);
+  }, [isAuthed]);
 
   if (checkingAuth) {
     return (

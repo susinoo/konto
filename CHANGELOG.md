@@ -2,6 +2,12 @@
 
 All notable changes to this project are documented here. The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the project uses [Semantic Versioning](https://semver.org/).
 
+## [Unreleased]
+
+### Changed
+
+- **Faster startup and navigation**: the instance configuration and the session check are requested in parallel (one round trip less on every cold start), and after login the Transactions, Analytics and Settings pages are prefetched in the background, so the first tap on them (or on the "+" button) no longer waits for a download.
+
 ## [2.0.0] — 2026-10-16 — first public release
 
 ### Changed (breaking)
