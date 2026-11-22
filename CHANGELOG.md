@@ -2,6 +2,12 @@
 
 All notable changes to this project are documented here. The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the project uses [Semantic Versioning](https://semver.org/).
 
+## [2.0.2] — 2026-11-22
+
+### Fixed
+
+- **Frontend dev server**: the Vite proxy no longer rewrites the `Host` header of `/api` requests, so logging in and every other POST work again with `npm run dev` in `frontend/` (they were rejected with `403 INVALID_ORIGIN`). Production was not affected.
+
 ## [2.0.1] — 2026-10-19
 
 ### Changed
