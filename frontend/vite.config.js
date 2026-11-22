@@ -16,9 +16,15 @@ export default defineConfig(({ mode }) => {
       // VITE_TAILNET_HOST is set (e.g. testing on a phone over Tailscale).
       host: true,
       allowedHosts: env.VITE_TAILNET_HOST ? [env.VITE_TAILNET_HOST] : [],
-      // The whole backend API lives under /api.
+      // The whole backend API lives under /api. changeOrigin: false keeps
+      // the browser's Host header, which the backend's Origin check compares
+      // against: the string shorthand would rewrite it to localhost:3000 and
+      // every POST (login included) would get 403 INVALID_ORIGIN.
       proxy: {
-        "/api": "http://localhost:3000",
+        "/api": {
+          target: "http://localhost:3000",
+          changeOrigin: false,
+        },
       },
     },
   };
